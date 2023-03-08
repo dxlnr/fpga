@@ -5,30 +5,38 @@
 // different speed to communicate with the uart receiver and transmitter.
 //
 module fifo_buffer 
-    #(parameter D_BITS=8,           // Data bits
+    #(parameter D_BITS=8,           // Data bits of single read and write.
                 BYTE_SIZE=8         // Address bits define the size of the buffer.
     )(
-    input clk,                      // input wire clk
-    input reset_n,                  // 
-    input [D_BITS - 1:0] din,       // input wire [7 : 0] din
-    input wr_en,                    // input wire wr_en
-    input rd_en,                    // input wire rd_en
-    output [D_BITS - 1:0] dout,     // output wire [7 : 0] dout
-    output full,                    // output wire full
-    output empty,                   // output wire tx_fifo_empty 
+    input clk,                      // Top level system clock input.
+    input reset_n,                  // Asynchronous active low reset. 
+    input [D_BITS - 1:0] din,       // Data in.
+    input wr_en,                    // Write enable 
+    input rd_en,                    // Read enable
+    output [D_BITS - 1:0] dout,     // Data out
+    output full,                    // Set when FIFO buffer is full.
+    output empty                    // Set when FIFO buffer is empty.
     );    
     
-    reg [2:0] head_ptr, tail_ptr;
-    reg [2:0] counter;
+    reg [3:0] head_ptr, tail_ptr;
+    reg [3:0] counter;
+    reg [D_BITS - 1:0] dout;
+    reg empty, full;
 
     reg [D_BITS - 1:0] mem [0:BYTE_SIZE - 1];
     integer i;
+
+    always @ (counter) begin 
+        empty = (counter == 0);
+        full = (counter == BYTE_SIZE);
+    end
 
     always @ (posedge clk, negedge reset_n) begin 
         if (!reset_n) begin 
             head_ptr <= 0;
             tail_ptr <= 0;
             counter <= 0;
+            dout <= 0;
             for (i = 0; i < BYTE_SIZE; i = i + 1) begin 
                 mem[i] <= 0;
             end
@@ -39,21 +47,18 @@ module fifo_buffer
                 head_ptr <= head_ptr + 1;
             end
             else if ((rd_en) && (counter > 0)) begin 
+                dout <= mem[tail_ptr];
                 counter <= counter - 1;
                 tail_ptr <= tail_ptr + 1;
             end
             else begin
-                counter <= couner;
+                counter <= counter;
                 head_ptr <= head_ptr;
                 tail_ptr <= tail_ptr;
-                mem <= mem;
+                dout <= dout;
+                mem[head_ptr] <= mem[head_ptr];
             end
         end
     end
-
-    // output logic section
-    assign dout = (rd_en & ~wr_en) ? mem[tail_ptr] : 0;
-    assign full = (counter == BYTE_SIZE);
-    assign empty = (counter == 0);
     
-endmodule;
+endmodule

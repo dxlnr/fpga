@@ -1,5 +1,3 @@
-`timescale 1ns / 1ps
-
 `include "core/uart/uart_transmitter.v"
 `include "core/uart/uart_receiver.v"
 `include "core/uart/baud_rate_generator.v"

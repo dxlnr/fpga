@@ -1,15 +1,16 @@
 // UART Receiver 
 //
 module uart_receiver 
-    #(parameter D_BITS=8,     // Data bits that are sent/received.
+    #(parameter D_BITS=8,               // Data bits that are sent/received.
                 SB_TICK=16
     )(
-    input clk,
-    input reset_n,
-    input rx,
-    input s_tick,
-    output [D_BITS - 1:0] rx_dout,
-    output reg rx_done_tick );
+    input clk,                          // Top level system clock input.
+    input reset_n,                      // Asynchronous active low reset.
+    input rx,                           // UART receiver Pin.
+    input s_tick,                       // Receive the data on data pin.
+    output [D_BITS - 1:0] rx_dout,      // Data output that gets sent to FIFO.
+    output reg rx_done_tick             // Set when receiving is finished.
+    );
     
     reg [2:0] rx_state, rx_state_next;
     reg [3:0] s_register, s_register_next;
@@ -81,7 +82,6 @@ module uart_receiver
                            rx_state_next = r_state_stop;
                        else begin 
                            n_bits_register_next = n_bits_register + 1;
-                           /* rx_state_next = r_state_data; */
                        end
                     end
                     else begin

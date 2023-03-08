@@ -1,9 +1,8 @@
-`timescale 1ns / 1ps
-
 `include "core/uart/uart_transmitter.v"
 `include "core/uart/uart_receiver.v"
 `include "core/uart/baud_rate_generator.v"
 `include "core/uart/fifo_buffer.v"
+
 // UART
 //
 // Combine receiver, transmitter, baud rate generator and fifo buffers.
@@ -44,7 +43,7 @@ module uart
 
     // UART Receiver
     wire rx_done_tick;
-    wire [DBIT - 1: 0] rx_dout;
+    wire [D_BITS - 1: 0] rx_dout;
     uart_receiver #(.D_BITS(D_BITS), .SB_TICK(SB_TICK)) recv (
         .clk(clk),
         .reset_n(reset_n),
@@ -54,9 +53,9 @@ module uart
         .rx_dout(rx_dout)
     );
 
-    fifo_buffer #(.D_BITS(D_BITS), .BYTE_SIE(8)) fifo_rx (
+    fifo_buffer #(.D_BITS(D_BITS), .BYTE_SIZE(8)) fifo_rx (
         .clk(clk),
-        .reset_n(~reset_n),
+        .reset_n(reset_n),
         .din(rx_dout),
         .wr_en(rx_done_tick),
         .rd_en(rd_uart),
@@ -68,7 +67,7 @@ module uart
     // UART transmitter
     wire tx_fifo_empty; 
     wire tx_done_tick;
-    wire [DBIT - 1: 0] tx_din;
+    wire [D_BITS - 1: 0] tx_din;
     uart_transmitter #(.D_BITS(D_BITS), .SB_TICK(SB_TICK)) trans (
         .clk(clk),
         .reset_n(reset_n),
@@ -79,9 +78,9 @@ module uart
         .tx(tx)
     );
 
-    fifo_buffer #(.D_BITS(D_BITS), .BYTE_SIE(8)) fifo_tx (
+    fifo_buffer #(.D_BITS(D_BITS), .BYTE_SIZE(8)) fifo_tx (
         .clk(clk),
-        .reset_n(~reset_n),
+        .reset_n(reset_n),
         .din(w_data),
         .wr_en(wr_uart),
         .rd_en(tx_done_tick),

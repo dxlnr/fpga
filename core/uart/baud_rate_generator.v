@@ -7,11 +7,12 @@
 module baud_rate_generator 
     #(parameter BITS = 4
     )(
-    input clk,
-    input reset_n,
-    input ena,
-    input [BITS - 1:0] timer_final_value,
-    output done);
+    input clk,                              // Top level system clock input. 
+    input reset_n,                          // Asynchronous active low reset.
+    input ena,                              // Enable Bit
+    input [BITS - 1:0] timer_final_value,   // Counts up to this value. 
+    output done                             // Signal set when final value is reached.
+    );
 
     reg [BITS - 1:0] count_register, count_register_next;
 

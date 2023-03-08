@@ -1,5 +1,5 @@
 // Testbench to exercise both the UART Tx and Rx.
-`include "core/uart/uart_rx_tx_only.v"
+`include "core/uart/uart.v"
  
 module uart_tb #(parameter PERIOD = 10);
     // Testbench with a 10 MHz internal clock.
@@ -14,28 +14,31 @@ module uart_tb #(parameter PERIOD = 10);
 	reg clk;
 	reg reset_n;
     
-	reg tx_start;
-	reg [7:0] tx_din;
+    reg rd_uart;
+	reg wr_uart;
+	reg [7:0] w_data;
 	reg rx;
 
 	// Outputs
 	wire tx;
-    wire tx_done_tick;
-	wire [7:0] rx_dout;
-    wire rx_done_tick;
+    wire rx_empty;
+	wire [7:0] r_data;
+    wire tx_full;
 
-    uart_rx_tx_only uart_driver (
+    uart uut (
         .clk(clk),
         .reset_n(reset_n),
         
-        .tx_din(tx_din),
-        .tx_start(tx_start),
-        .tx_done_tick(tx_done_tick),
+        .w_data(w_data),
+        .wr_uart(wr_uart),
+        .tx_full(tx_full),
         .tx(tx),
 
         .rx(rx),
-        .rx_done_tick(rx_done_tick),
-        .rx_dout(rx_dout),
+        .rd_uart(rd_uart),
+        .rx_empty(rx_empty),
+        .r_data(r_data),
+
         .timer_final_value(11'd53)
     );
     
@@ -44,7 +47,6 @@ module uart_tb #(parameter PERIOD = 10);
         $display("Starting the UART Simulation");
         clk = 0; 
         reset_n = 0;
-        tx_start = 0;
     end 
 
     always #CLOCK_PERIOD_NS clk = ~clk;
@@ -57,16 +59,20 @@ module uart_tb #(parameter PERIOD = 10);
             reset_n = 1;
 
             // Send data using tx portion of UART and wait until data is recieved.
-            tx_start = 1;
-            tx_din = 8'b0111_1110;
+            wr_uart = 1;
+            w_data = 8'b0111_1110;
             
             // Wait until the receiver sets signal to done.
-            wait (rx_done_tick == 1)
+            /* wait (rd_uart == 1) */
+            #400000
+            rd_uart = 1;
+            wait(rx_empty == 1);
+
             // Read out the signal.
-            if (rx_dout == 8'b0111_1110)
+            if (r_data == 8'b0111_1110)
                 $display("Success.");
             else
-                $display("Failure : rx %b - tx %b", rx_dout, tx_din);
+                $display("Failure : r_data %b - w_data %b", r_data, w_data);
 
         $finish;
     end

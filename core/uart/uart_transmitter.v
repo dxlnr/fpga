@@ -1,7 +1,7 @@
 // UART Transmitter
 //
 module uart_transmitter
-    #(parameter D_BITS=8,
+    #(parameter D_BITS=8,           // Data bits that are sent/received.
                 SB_TICK=16
     )(
     input clk,                      // Top level system clock input.
@@ -10,7 +10,7 @@ module uart_transmitter
     input [D_BITS -1:0] tx_din,     // Data input that gets sent out.
     input tx_start,                 // Data is available for fetching from FIFO.  
     output tx,                      // UART transmitter Pin.
-    output reg tx_done_tick         //  
+    output reg tx_done_tick         // Set when transmitting is finished. 
     );
     
     reg [2:0] tx_state, tx_state_next;
