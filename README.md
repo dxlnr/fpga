@@ -7,11 +7,11 @@ Board:
 
 Inspired by [fromthetransistor](https://github.com/geohot/fromthetransistor), 
 the first project was to implement the Universal Asynchronous Reciever Transmitter (UART)
-protocol.
+protocol. 
 
 ## Verilog
 
-UART Protocol implementation with [verilog](https://de.wikipedia.org/wiki/Verilog).
+UART Protocol implementation with [Verilog](https://de.wikipedia.org/wiki/Verilog).
 Development was done with Icarus Verilog and GTKWave, which is also used to run 
 the tests.
 
@@ -21,4 +21,5 @@ Run the testbench using [iverilog](https://github.com/steveicarus/iverilog):
 ```
 
 Todo: 
-- Add FIFO Buffer implementation to bare uart rx & tx.
+- Extend testbench for UART module.
+- Test the implementation on the board.

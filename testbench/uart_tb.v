@@ -63,8 +63,8 @@ module uart_tb #(parameter PERIOD = 10);
             w_data = 8'b0111_1110;
             
             // Wait until the receiver sets signal to done.
-            /* wait (rd_uart == 1) */
-            #400000
+            wait(uut.recv.rx_done_tick == 1)
+            #200000
             rd_uart = 1;
             wait(rx_empty == 1);
 
