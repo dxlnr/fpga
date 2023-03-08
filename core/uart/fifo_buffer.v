@@ -33,21 +33,27 @@ module fifo_buffer
                 mem[i] <= 0;
             end
         end else begin 
-            if (wr_en) begin 
+            if ((wr_en) && (counter < BYTE_SIZE)) begin 
                 mem[head_ptr] <= din;
                 counter <= counter + 1;
                 head_ptr <= head_ptr + 1;
             end
-            if (rd_en) begin 
+            else if ((rd_en) && (counter > 0)) begin 
                 counter <= counter - 1;
                 tail_ptr <= tail_ptr + 1;
+            end
+            else begin
+                counter <= couner;
+                head_ptr <= head_ptr;
+                tail_ptr <= tail_ptr;
+                mem <= mem;
             end
         end
     end
 
     // output logic section
     assign dout = (rd_en & ~wr_en) ? mem[tail_ptr] : 0;
-    assign full = ((head_ptr == tail_ptr) && (counter == BYTE_SIZE)) ? 1 : 0;
-    assign empty = (((head_ptr == tail_ptr) && (counter == 0)) ? 1 : 0;
+    assign full = (counter == BYTE_SIZE);
+    assign empty = (counter == 0);
     
 endmodule;

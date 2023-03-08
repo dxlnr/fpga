@@ -1,7 +1,7 @@
 // Testbench to exercise both the UART Tx and Rx.
 `timescale 1ns/1ps
  
-`include "core/uart/uart.v"
+`include "core/uart/uart_rx_tx_only.v"
  
 module uart_tb #(parameter PERIOD = 10);
     // Testbench with a 10 MHz internal clock.
@@ -26,7 +26,7 @@ module uart_tb #(parameter PERIOD = 10);
 	wire [7:0] rx_dout;
     wire rx_done_tick;
 
-    uart uart_driver (
+    uart_rx_tx_only uart_driver (
         .clk(clk),
         .reset_n(reset_n),
         
