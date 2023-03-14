@@ -4,11 +4,18 @@ Yosys -> nextpntr -> openFPGA assembler for creating the binary.
 GCC -> assembler -> linker
 
 
-https://verilogtorouting.org/
 https://f4pga.readthedocs.io/projects/prjxray/en/latest/
 
 # Steps so far 
- - Build Yosys (added to path) 
+ - Build Yosys from scratch (added to path) 
  - nextpnr-xilinx which is the example (build it and performed the steps for building the .bin)
     - check the xilinx/example/arty-a35
-- build prjxray (fasm is missing) when running fasm2frames 
+- build prjxray 
+    - .download.sh : prjxray-db
+    - pip install . in thirdparty/fasm
+    - pip install . (in root)
+    - make build (in root) -> adjust CMAKELists.txt by moving the set(CMAKE_CXX_STANDART 14) under option(PRJXRAY_BUILD_TESTING "" OFF) for absl fix  
+    - cd build -> cmake -DARCH=xilinx -DBUILD_GUI=no -DBUILD_PYTHON=no . -> make 
+
+
+picorv32
